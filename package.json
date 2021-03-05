@@ -1,0 +1,30 @@
+{
+  "name": "neverseen",
+  "version": "1.0.0",
+  "description": "A bot for the neverseen kazoo band discord",
+  "main": "src/bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RangerEmerald/Neverseen.git"
+  },
+  "author": "TheMoonThatRises",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RangerEmerald/Neverseen/issues"
+  },
+  "homepage": "https://github.com/RangerEmerald/Neverseen#readme",
+  "dependencies": {
+    "@discordjs/opus": "^0.4.0",
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "ffmpeg": "0.0.4",
+    "mysql2": "^2.2.5",
+    "simple-youtube-api": "^5.2.1",
+    "sqlite3": "^5.0.2",
+    "ytdl-core-discord": "^1.2.5",
+    "ytpl": "^2.0.5"
+  }
+}
