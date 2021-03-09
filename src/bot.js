@@ -15,6 +15,7 @@ const prefix = "nvsn."
 
 //PLAY VARIABLES
 const timer = 1000 * 60 * 5; //Milliseconds
+const triviaTimer = timer * 2;
 let lastmessage = {};
 let triviaMain = {};
 
@@ -95,7 +96,7 @@ async function randomTrivia() {
                 } catch (error) { }
             }
         }
-    }, timer * 3);
+    }, triviaTimer);
 }
 
 async function joinLeaveMessage(member, whichjoinleave) {
@@ -129,7 +130,7 @@ client.on('ready', () =>{
     randomTrivia();
     setInterval(() => {
         scoreCache();
-    }, timer);
+    }, triviaTimer * 2);
 });
 
 client.on('message', async message => {
