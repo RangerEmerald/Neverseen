@@ -134,14 +134,15 @@ client.on('ready', () =>{
 });
 
 client.on('message', async message => {
+    let mesagecontent = message.content.toLowerCase().replace(/\s+/g,' ').trim();
     if (message.author.bot) return;
-    else if (message.content.startsWith(prefix)) {
-        const args = message.content.toLowerCase().replace(/\s+/g,' ').trim().slice(prefix.length).split(" ");
+    else if (mesagecontent.startsWith(prefix)) {
+        const args = mesagecontent.slice(prefix.length).split(" ");
         switch (args[0]) {
             case "guess":
                 if (!triviaMain[message.guild.id].triviaMessage) return message.reply('There is no trivia right now!');
                 else {
-                    const answer = message.content.toLowerCase().replace(/\s+/g,' ').trim().slice(message.content.toLowerCase().replace(/\s+/g,' ').trim().indexOf("guess") + 6);
+                    const answer = mesagecontent.trim().slice(mesagecontent.indexOf("guess") + 6);
                     if (triviaMain[message.guild.id].triviaAnswer.includes(answer)) {
                         await triviaMain[message.guild.id].triviaMessage.delete();
                         triviaMain[message.guild.id].triviaMessage = null;
