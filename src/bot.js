@@ -31,12 +31,12 @@ async function intervalMessage() {
     for (guild in private.allowed) {
         lastmessage[guild].server = true;
         setTimeout(() => {
-                if (new Date().getTime() - lastmessage[guild].time < timer - 3000) {
-                    try {
-                        client.channels.cache.get(private.allowed[guild].mainchat).send(list[Math.round(Math.random() * (list.length - 1))]);
-                    } catch (error) { }
-                }
-                lastmessage[guild].server = false;
+            if (new Date().getTime() - lastmessage[guild].time < timer - 3000) {
+                try {
+                    client.channels.cache.get(private.allowed[guild].mainchat).send(list[Math.round(Math.random() * (list.length - 1))]);
+                } catch (error) { }
+            }
+            lastmessage[guild].server = false;
         }, timer * 3);
     }
 }
