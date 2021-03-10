@@ -27,18 +27,17 @@ for (guild in private.allowed) {
 }
 
 //PLAY FUNCTIONS
-async function intervalMessage() {
-    for (guild in private.allowed) {
-        lastmessage[guild].server = true;
-        setTimeout(() => {
-            if (new Date().getTime() - lastmessage[guild].time < timer - 3000) {
-                try {
-                    client.channels.cache.get(private.allowed[guild].mainchat).send(list[Math.round(Math.random() * (list.length - 1))]);
-                } catch (error) { }
-            }
-            lastmessage[guild].server = false;
-        }, timer * 3);
-    }
+async function intervalMessage(guild) {
+    if (!lastmessage[guild]) return;
+    lastmessage[guild].server = true;
+    setTimeout(() => {
+        if (new Date().getTime() - lastmessage[guild].time < timer - 3000) {
+            try {
+                client.channels.cache.get(private.allowed[guild].mainchat).send(list[Math.round(Math.random() * (list.length - 1))]);
+            } catch (error) { }
+        }
+        lastmessage[guild].server = false;
+    }, timer * 3);
 }
 
 async function randomTrivia() {
@@ -235,7 +234,7 @@ client.on('message', async message => {
         }
     }
     if (private.allowed[message.guild.id] && private.allowed[message.guild.id].mainchat == message.channel.id && message.content.toLowerCase().indexOf("guess") != 5 && !triviaMain[message.guild.id].triviaMessage) {
-        if (!lastmessage[message.guild.id].server) intervalMessage();
+        if (!lastmessage[message.guild.id].server) intervalMessage(message.guild.id);
         triviaUsers = triviaMain[message.guild.id].users.get(message.author.id);
         if (!triviaUsers || new Date().getTime() - triviaUsers > timer) await triviaMain[message.guild.id].users.set(message.author.id, message.createdTimestamp);
         lastmessage[message.guild.id].time = message.createdTimestamp;
