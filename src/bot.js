@@ -145,22 +145,22 @@ client.on('message', async message => {
         switch (args[0]) {
             case "guess":
                 if (!triviaMain[message.guild.id].triviaMessage) {
-                    message.delete().catch(error => console.log(`An error has occured --- ${error}`));;
+                    message.delete().catch(error => console.log(`An error has occured --- ${error}`));
                     return message.reply('There is no trivia right now!');
                 } else {
                     const answer = mesagecontent.trim().slice(mesagecontent.indexOf("guess") + 6);
                     if (triviaMain[message.guild.id].triviaAnswer.includes(answer)) {
-                        await triviaMain[message.guild.id].triviaMessage.delete().catch(error => console.log(`An error has occured --- ${error}`));;
+                        await triviaMain[message.guild.id].triviaMessage.delete().catch(error => console.log(`An error has occured --- ${error}`));
                         triviaMain[message.guild.id].triviaMessage = null;
                         if (message.guild.id != "709195031822598255") await addScore(message.author.id);
                         triviaMain[message.guild.id].users.clear();
-                        await message.delete().catch(error => console.log(`An error has occured --- ${error}`));;
+                        await message.delete().catch(error => console.log(`An error has occured --- ${error}`));
                         const reply = await message.reply(`You got the answer!`)
-                            .then(setTimeout(() => reply.delete(), 60000));
+                            .then(setTimeout(() => reply.delete().catch(error => console.log(`An error has occured --- ${error}`)), 60000));
                     } else {
-                        message.delete().catch(error => console.log(`An error has occured --- ${error}`));;
+                        message.delete().catch(error => console.log(`An error has occured --- ${error}`));
                         const reply = await message.reply(`That is not the answer!`)
-                            .then(setTimeout(() => reply.delete(), 60000));
+                            .then(setTimeout(() => reply.delete().catch(error => console.log(`An error has occured --- ${error}`)), 60000));
                     }
                 }
                 break;
