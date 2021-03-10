@@ -30,7 +30,7 @@ for (guild in private.allowed) {
 async function intervalMessage() {
     setInterval(() => {
         for (guild in private.allowed) {
-            if (new Date().getTime() - lastmessage[guild] < timer-2000) {
+            if (new Date().getTime() - lastmessage[guild] < timer - 3000) {
                 try {
                     client.channels.cache.get(private.allowed[guild].mainchat).send(list[Math.round(Math.random() * (list.length - 1))]);
                 } catch (error) { }
