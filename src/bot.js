@@ -21,22 +21,24 @@ let triviaMain = {};
 
 //INIT VARIABLES
 for (guild in private.allowed) {
-    lastmessage[guild] = new Date().getTime() + timer;
+    lastmessage[guild] = {time: 0, server: false};
     triviaMain[guild] = {triviaAnswer: null, triviaNumber: null, triviaMessage: null, users: new Map(), triviaEach: {}};
     for (i in trivia) triviaMain[guild].triviaEach[trivia[i].id] = 5;
 }
 
 //PLAY FUNCTIONS
 async function intervalMessage() {
-    setInterval(() => {
-        for (guild in private.allowed) {
-            if (new Date().getTime() - lastmessage[guild] < timer - 3000) {
-                try {
-                    client.channels.cache.get(private.allowed[guild].mainchat).send(list[Math.round(Math.random() * (list.length - 1))]);
-                } catch (error) { }
-            }
-        }
-    }, timer);
+    for (guild in private.allowed) {
+        lastmessage[guild].server = true;
+        setTimeout(() => {
+                if (new Date().getTime() - lastmessage[guild].time < timer - 3000) {
+                    try {
+                        client.channels.cache.get(private.allowed[guild].mainchat).send(list[Math.round(Math.random() * (list.length - 1))]);
+                    } catch (error) { }
+                }
+                lastmessage[guild].server = false;
+        }, timer * 3);
+    }
 }
 
 async function randomTrivia() {
@@ -126,7 +128,6 @@ async function joinLeaveMessage(member, whichjoinleave) {
 client.on('ready', () =>{ 
     scoreCache();
     console.log(`${client.user.tag} has logged in`); 
-    intervalMessage();
     randomTrivia();
     setInterval(() => {
         scoreCache();
@@ -231,9 +232,10 @@ client.on('message', async message => {
         }
     }
     if (private.allowed[message.guild.id] && private.allowed[message.guild.id].mainchat == message.channel.id && message.content.toLowerCase().indexOf("guess") != 5 && !triviaMain[message.guild.id].triviaMessage) {
+        if (!lastmessage[message.guild.id].server) intervalMessage();
         triviaUsers = triviaMain[message.guild.id].users.get(message.author.id);
         if (!triviaUsers || new Date().getTime() - triviaUsers > timer) await triviaMain[message.guild.id].users.set(message.author.id, message.createdTimestamp);
-        lastmessage[message.guild.id] = message.createdTimestamp;
+        lastmessage[message.guild.id].time = message.createdTimestamp;
     }
     for (i in replylist) {
         if (similarity.similarity(replylist[i][0], message.content.toLowerCase()) > 0.69) return message.channel.send(replylist[i][1]);
