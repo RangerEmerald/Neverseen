@@ -145,7 +145,7 @@ client.on('message', async message => {
                     if (triviaMain[guild].triviaAnswer.includes(answer)) {
                         await triviaMain[guild].triviaMessage.delete();
                         triviaMain[guild].triviaMessage = null;
-                        await addScore(message.author.id);
+                        if (message.guild.id != "709195031822598255") await addScore(message.author.id);
                         triviaMain[guild].users.clear();
                         await message.delete();
                         const reply = await message.reply(`You got the answer!`)
