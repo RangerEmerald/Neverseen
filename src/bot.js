@@ -11,8 +11,7 @@ const { addScore,  scoreCache, scoreMapCache, deleteScore } = require('./databas
 
 //SET UP VARIABLES
 const token = process.env.BOT_TOKEN;
-const prefix = "nvsn."
-
+const prefix = process.env.PREFIX;
 //PLAY VARIABLES
 const timer = 1000 * 60 * 5; //Milliseconds
 const triviaTimer = timer * 2;
@@ -92,7 +91,7 @@ async function randomTrivia() {
                     .setFooter("To guess, do nvsn.guess [answer]")
                     .setTimestamp();
 
-                if (trivia[triviaMain[guild].triviaNumber].image) embed.setImage(trivia[triviaMain[guild].triviaNumber].image);
+                if (trivia[triviaMain[guild].triviaNumber].image) embed.setImage(await trivia[triviaMain[guild].triviaNumber].image);
     
                 try {
                     triviaMain[guild].triviaMessage = await client.channels.cache.get(private.allowed[guild].mainchat).send(embed);
@@ -145,8 +144,10 @@ client.on('message', async message => {
         const args = mesagecontent.slice(prefix.length).split(" ");
         switch (args[0]) {
             case "guess":
-                if (!triviaMain[message.guild.id].triviaMessage) return message.reply('There is no trivia right now!');
-                else {
+                if (!triviaMain[message.guild.id].triviaMessage) {
+                    message.delete();
+                    return message.reply('There is no trivia right now!');
+                } else {
                     const answer = mesagecontent.trim().slice(mesagecontent.indexOf("guess") + 6);
                     if (triviaMain[message.guild.id].triviaAnswer.includes(answer)) {
                         await triviaMain[message.guild.id].triviaMessage.delete();
