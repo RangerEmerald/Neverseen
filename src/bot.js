@@ -191,45 +191,43 @@ client.on('message', async message => {
                 break;
             case "points":
                 if (message.member.roles.cache.get(private.control)) {
+                    async function foreachElement(operation, args, call, message, isNull = false) {
+                        args = (isNull) ? args.splice(2, 0, null) : args;
+                        let rpmessage = await message.channel.send("Please wait...");
+                        let mentions = message.mentions.users;
+                        if (args[3] == "@everyone") mentions = client.guilds.cache.get(message.guild.id).members.cache;
+                        if (mentions.size != 0) {
+                            mentions.forEach(async function (user, key){
+                                const member = client.guilds.cache.get(message.guild.id).members.cache.get(key);
+                                if (!member) return message.channel.send(`I could not find user <@!${id}>`);
+                                await rpmessage.edit(`${operation} ${args[2]} of ${member}'s points...`);
+                                await call(key, args[2]);
+                            });
+                        } else if (!args[3].startsWith("<@!")) {
+                            let newargs = args.splice(4);
+                            let guild = client.guilds.cache.get(args[3]);
+                            if (!guild) return message.channel.send(`I could not find guild ${args[3]}`)
+                            for (i in newargs) {
+                                const member = guild.members.cache.get(newargs[i]);
+                                if (!member) return message.channel.send(`I could not find user <@!${newargs[i]}>`);
+                                await rpmessage.edit(`${operation} ${args[2]} of ${member.displayName}'s points...`);
+                                await call(newargs[i], args[2]);
+                            }
+                        } else message.channel.send(`I could not find user <@!${args[3]}> in this guild!`);
+                        await rpmessage.edit("Done.");
+                    }
                     switch(args[1]) {
-                        case "remove": {
+                        case "remove": 
                             if (isNaN(args[2])) return message.channel.send("The format is `nvsn.points remove [number] [user/s]`");
-                            let rpmessage = await message.channel.send("Please wait...");
-                            let mentions = message.mentions.users;
-                            if (args[3] == "@everyone") mentions = client.guilds.cache.get(message.guild.id).members.cache;
-                            mentions.forEach(async function (user, key){
-                                const member = client.guilds.cache.get(message.guild.id).members.cache.get(key).displayName;
-                                await rpmessage.edit(`Removing ${args[2]} of ${member}'s points...`);
-                                await deleteScore(key, args[2]);
-                            })
-                            await rpmessage.edit("Done.");
+                            foreachElement("Removing", args, deleteScore, message);
                             break;
-                        }
-                        case "add": {
+                        case "add": 
                             if (isNaN(args[2])) return message.channel.send(`The format is \`nvsn.points add [number] [user/s]\``);
-                            let rpmessage = await message.channel.send("Please wait...");
-                            let mentions = message.mentions.users;
-                            if (args[3] == "@everyone") mentions = client.guilds.cache.get(message.guild.id).members.cache;
-                            mentions.forEach(async function (user, key){
-                                const member = client.guilds.cache.get(message.guild.id).members.cache.get(key).displayName;
-                                await rpmessage.edit(`Adding ${args[2]} to ${member}'s points...`);
-                                await addScore(key, args[2]);
-                            })
-                            await rpmessage.edit("Done.");
+                            foreachElement("Adding", args, addScore, message);
                             break;
-                        }
-                        case "wipe": {
-                            let rpmessage = await message.channel.send("Please wait...");
-                            let mentions = message.mentions.users;
-                            if (args[2] == "@everyone") mentions = client.guilds.cache.get(message.guild.id).members.cache;
-                            mentions.forEach(async function (user, key){
-                                const member = client.guilds.cache.get(message.guild.id).members.cache.get(key).displayName;
-                                await rpmessage.edit(`Wiping ${member}'s points...`);
-                                await deleteScore(key, null);
-                            })
-                            await rpmessage.edit("Done.");
+                        case "wipe": 
+                            foreachElement("Wiping", args, deleteScore, message, true);
                             break;
-                        }
                     }
                 }
                 break;
