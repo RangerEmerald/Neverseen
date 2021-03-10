@@ -139,7 +139,7 @@ client.on('message', async message => {
         const args = message.content.toLowerCase().replace(/\s+/g,' ').trim().slice(prefix.length).split(" ");
         switch (args[0]) {
             case "guess":
-                if (!triviaMain[guild].triviaMessage) return message.reply('There is no trivia right now!');
+                if (!triviaMain[message.guild.id].triviaMessage) return message.reply('There is no trivia right now!');
                 else {
                     const answer = message.content.toLowerCase().replace(/\s+/g,' ').trim().slice(message.content.toLowerCase().replace(/\s+/g,' ').trim().indexOf("guess") + 6);
                     if (triviaMain[guild].triviaAnswer.includes(answer)) {
