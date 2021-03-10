@@ -18,6 +18,7 @@ const timer = 1000 * 60 * 5; //Milliseconds
 const triviaTimer = timer * 2;
 let lastmessage = {};
 let triviaMain = {};
+let userReplyMessage = new Map();
 
 //INIT VARIABLES
 for (guild in private.allowed) {
@@ -132,6 +133,9 @@ client.on('ready', () =>{
     setInterval(() => {
         scoreCache();
     }, triviaTimer * 2);
+    setInterval(() => {
+        userReplyMessage.clear();
+    }, timer);
 });
 
 client.on('message', async message => {
@@ -238,9 +242,16 @@ client.on('message', async message => {
         lastmessage[message.guild.id].time = message.createdTimestamp;
     }
     for (i in replylist) {
-        if (similarity.similarity(replylist[i][0], message.content.toLowerCase()) > 0.69) return message.channel.send(replylist[i][1]);
-        else if (similarity.similarity(replylist[i][0].replace(/[ ]/g, ''), message.content.toLowerCase().replace(/[ ]/g, '')) > 0.69) return message.channel.send(replylist[i][1]);
-        else if (message.content.toLowerCase().indexOf(replylist[i][0]) != -1) return message.channel.send(replylist[i][1]);
+        let user = userReplyMessage.get(message.author.id);
+        
+        if ((similarity.similarity(replylist[i][0], message.content.toLowerCase()) > 0.69 || similarity.similarity(replylist[i][0].replace(/[ ]/g, ''), message.content.toLowerCase().replace(/[ ]/g, '')) > 0.69 || message.content.toLowerCase().indexOf(replylist[i][0]) != -1) && (!user || user < 5)) {
+            if (user != undefined) userReplyMessage.set(message.author.id, (userReplyMessage.get(message.author.id))+1); 
+            else userReplyMessage.set(message.author.id, 1);
+            console.log(userReplyMessage.get(message.author.id))
+            if (similarity.similarity(replylist[i][0], message.content.toLowerCase()) > 0.69) message.channel.send(replylist[i][1]);
+            else if (similarity.similarity(replylist[i][0].replace(/[ ]/g, ''), message.content.toLowerCase().replace(/[ ]/g, '')) > 0.69) message.channel.send(replylist[i][1]);
+            else if (message.content.toLowerCase().indexOf(replylist[i][0]) != -1) message.channel.send(replylist[i][1]);
+        }
     }
 });
 
