@@ -142,11 +142,11 @@ client.on('message', async message => {
                 if (!triviaMain[message.guild.id].triviaMessage) return message.reply('There is no trivia right now!');
                 else {
                     const answer = message.content.toLowerCase().replace(/\s+/g,' ').trim().slice(message.content.toLowerCase().replace(/\s+/g,' ').trim().indexOf("guess") + 6);
-                    if (triviaMain[guild].triviaAnswer.includes(answer)) {
-                        await triviaMain[guild].triviaMessage.delete();
-                        triviaMain[guild].triviaMessage = null;
+                    if (triviaMain[message.guild.id].triviaAnswer.includes(answer)) {
+                        await triviaMain[message.guild.id].triviaMessage.delete();
+                        triviaMain[message.guild.id].triviaMessage = null;
                         if (message.guild.id != "709195031822598255") await addScore(message.author.id);
-                        triviaMain[guild].users.clear();
+                        triviaMain[message.guild.id].users.clear();
                         await message.delete();
                         const reply = await message.reply(`You got the answer!`)
                             .then(setTimeout(() => reply.delete(), 60000));
