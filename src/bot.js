@@ -127,6 +127,7 @@ async function joinLeaveMessage(member, whichjoinleave) {
 client.on('ready', () =>{ 
     scoreCache();
     console.log(`${client.user.tag} has logged in`); 
+    client.user.setActivity('The Neverseen', { type: "WATCHING" })
     randomTrivia();
     setInterval(() => {
         scoreCache();
@@ -243,6 +244,7 @@ client.on('message', async message => {
         let user = userReplyMessage.get(message.author.id);
         
         if ((similarity.similarity(replylist[i][0], message.content.toLowerCase()) > 0.69 || similarity.similarity(replylist[i][0].replace(/[ ]/g, ''), message.content.toLowerCase().replace(/[ ]/g, '')) > 0.69 || message.content.toLowerCase().indexOf(replylist[i][0]) != -1) && ((!user || user < 5) || message.channel.name.toLowerCase() == "spam")) {
+            if (message.content.includes(":")) return;
             if (user != undefined && message.channel.name.toLowerCase() != "spam") userReplyMessage.set(message.author.id, (userReplyMessage.get(message.author.id))+1); 
             else if (message.channel.name.toLowerCase() != "spam") userReplyMessage.set(message.author.id, 1);
             
