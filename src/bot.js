@@ -54,10 +54,11 @@ async function randomTrivia() {
                 triviaMain[guild].triviaEach[trivia[triviaMain[guild].triviaNumber].id] = 0;
                 for (id in triviaMain[guild].triviaEach) if (id != trivia[triviaMain[guild].triviaNumber].id) triviaMain[guild].triviaEach[id]++;
 
-                triviaMain[guild].triviaAnswer = [trivia[triviaMain[guild].triviaNumber].answer.toLowerCase(), trivia[triviaMain[guild].triviaNumber].acceptable.toLowerCase()];
+                triviaMain[guild].triviaAnswer = [trivia[triviaMain[guild].triviaNumber].answer.toLowerCase(), trivia[triviaMain[guild].triviaNumber].acceptable];
                 let question = trivia[triviaMain[guild].triviaNumber].question;
                 
                 if (triviaMain[guild].triviaAnswer[1] == null) triviaMain[guild].triviaAnswer.pop();
+                else triviaMain[guild].triviaAnswer[1] = triviaMain[guild].triviaAnswer[1].toLowerCase();
                 
                 let letters = ["a", "b", "c", "d"];
                 let order = [];
