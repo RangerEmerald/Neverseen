@@ -45,8 +45,8 @@ async function randomTrivia() {
         for (guild in private.allowed) {
             if (triviaMain[guild].triviaMessage != null) return;
             else if (triviaMain[guild].users.size >= 2) {
-                let mapArray = [...triviaMain[guild].users.values()]
-                if ((!mapArray) || (new Date().getTime() - mapArray[0] > timer && new Date().getTime() - mapArray[1] > timer)) return;
+                let mapArray = [...triviaMain[guild].users.values()].sort((a, b) => b - a);
+                if ((!mapArray) || (new Date().getTime() - mapArray[0] > timer || new Date().getTime() - mapArray[1] > timer)) return;
                 triviaMain[guild].triviaNumber = Math.round(Math.random() * (trivia.length - 1));
 
                 while (triviaMain[guild].triviaEach[trivia[triviaMain[guild].triviaNumber].id] < 5) triviaMain[guild].triviaNumber = Math.round(Math.random() * (trivia.length - 1));
