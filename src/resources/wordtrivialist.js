@@ -13,7 +13,7 @@ const trivia = [
     new MutipleChoiceTrivia("Who said \"Dex, your girlfriends are here\"?", "Rex", "Lex", "Bex", null, "Bex", "bex", "https://static.wikia.nocookie.net/lost-cities-keeper/images/6/6e/IMG_1311.jpg/revision/latest?cb=20201202182504"),
     new MutipleChoiceTrivia("Who did Gethen say \“But wouldn't it be ironic if someday I used that blade to chop off your pretty head?\” to?", "Mr Forkle", "Oralie", "Sophie", "Edaline", "Oralie", "oralie", "https://static.wikia.nocookie.net/lost-cities-keeper/images/2/26/Lumenaria.png/revision/latest/scale-to-width-down/1000?cb=20210205234315"),
     new Trivia("Who said \"Hind Sight is a dangerous game to play\"?", "edaline", "edaline ruewen"),
-    new Trivia("What is Vespera's middle name?", "Neci", null, "https://static.wikia.nocookie.net/lost-cities-keeper/images/a/aa/Vespera.png/revision/latest/scale-to-width-down/310?cb=20181003172612"),
+    new Trivia("What is Vespera's middle name?", "neci", null, "https://static.wikia.nocookie.net/lost-cities-keeper/images/a/aa/Vespera.png/revision/latest/scale-to-width-down/310?cb=20181003172612"),
     new Trivia("Where is Nightfall?", "atlantis", null, "https://static.wikia.nocookie.net/lost-cities-keeper/images/e/ec/Nightfall_Symbol.png/revision/latest/scale-to-width-down/267?cb=20190531232322"),
     new Trivia("What is Gethen's hair color?", "blond", "blonde"),
     new Trivia("Who is this character?", "alvar", "alvar vacker", "https://static.wikia.nocookie.net/lost-cities-keeper/images/8/82/Screenshot_2018-09-24_at_1.20.24_PM.png/revision/latest/scale-to-width-down/310?cb=20180924173856"),
