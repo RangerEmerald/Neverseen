@@ -135,7 +135,7 @@ client.on('ready', () =>{
     }, triviaTimer * 2);
     setInterval(() => {
         userReplyMessage.clear();
-    }, timer);
+    }, timer-2000);
 });
 
 client.on('message', async message => {
@@ -244,8 +244,7 @@ client.on('message', async message => {
     for (i in replylist) {
         let user = userReplyMessage.get(message.author.id);
         
-        if ((similarity.similarity(replylist[i][0], message.content.toLowerCase()) > 0.69 || similarity.similarity(replylist[i][0].replace(/[ ]/g, ''), message.content.toLowerCase().replace(/[ ]/g, '')) > 0.69 || message.content.toLowerCase().indexOf(replylist[i][0]) != -1) && ((!user || user < 5) || message.channel.name.toLowerCase() == "spam")) {
-            if (message.content.includes(":")) return;
+        if ((similarity.similarity(replylist[i][0], message.content.toLowerCase()) > 0.69 || similarity.similarity(replylist[i][0].replace(/[ ]/g, ''), message.content.toLowerCase().replace(/[ ]/g, '')) > 0.69 || message.content.toLowerCase().indexOf(replylist[i][0]) != -1) && ((!user || user < 10) || message.channel.name.toLowerCase() == "spam")) {
             if (user != undefined && message.channel.name.toLowerCase() != "spam") userReplyMessage.set(message.author.id, (userReplyMessage.get(message.author.id))+1); 
             else if (message.channel.name.toLowerCase() != "spam") userReplyMessage.set(message.author.id, 1);
             
