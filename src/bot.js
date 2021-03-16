@@ -235,7 +235,7 @@ client.on('message', async message => {
                 break;
         }
     }
-    if (private.allowed[message.guild.id] && private.allowed[message.guild.id].mainchat == message.channel.id && message.content.toLowerCase().indexOf("guess") != 5 && !triviaMain[message.guild.id].triviaMessage) {
+    if ((message.guild && message.author && message.channel && message.content) && private.allowed[message.guild.id] && private.allowed[message.guild.id].mainchat == message.channel.id && message.content.toLowerCase().indexOf("guess") != 5 && !triviaMain[message.guild.id].triviaMessage) {
         if (!lastmessage[message.guild.id].server) intervalMessage(message.guild.id);
         triviaUsers = triviaMain[message.guild.id].users.get(message.author.id);
         if (!triviaUsers || new Date().getTime() - triviaUsers > timer) await triviaMain[message.guild.id].users.set(message.author.id, message.createdTimestamp);
