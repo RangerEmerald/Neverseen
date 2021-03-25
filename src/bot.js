@@ -278,29 +278,27 @@ client.on('message', async message => {
                 break;
             case "points":
                 if (message.member.roles.cache.get(private.control)) {
-                    async function foreachElement(operation, args, call, message, isNull = false) {
-                        args = (isNull) ? args.splice(2, 0, null) : args;
+                    async function foreachElement(operation, args, call, message) {
+                        if (!args[2]) return message.channel.send(`You need to mention [a] user[s]!`);
                         let rpmessage = await message.channel.send("Please wait...");
                         let mentions = message.mentions.users;
-                        if (args[3] == "@everyone") mentions = client.guilds.cache.get(message.guild.id).members.cache;
+                        if (args[3] == "@everyone") mentions = client.users.cache;
                         if (mentions.size != 0) {
                             mentions.forEach(async function (user, key){
-                                const member = client.guilds.cache.get(message.guild.id).members.cache.get(key);
+                                const member = client.users.cache.get(key);
                                 if (!member) return message.channel.send(`I could not find user <@!${id}>`);
                                 await rpmessage.edit(`${operation} ${args[2]} of ${member}'s points...`);
                                 await call(key, args[2]);
                             });
-                        } else if (!args[3].startsWith("<@!")) {
-                            let newargs = args.splice(4);
-                            let guild = client.guilds.cache.get(args[3]);
-                            if (!guild) return message.channel.send(`I could not find guild ${args[3]}`)
-                            for (i in newargs) {
-                                const member = guild.members.cache.get(newargs[i]);
-                                if (!member) return message.channel.send(`I could not find user <@!${newargs[i]}>`);
+                        } else if (!args[2].startsWith("<@!")) {
+                            let newargs = args.splice(3);
+                            for (id of newargs) {
+                                const member = client.users.cache.get(id);
+                                if (!member) return message.channel.send(`I could not find user <@!${id}>`);
                                 await rpmessage.edit(`${operation} ${args[2]} of ${member.displayName}'s points...`);
-                                await call(newargs[i], args[2]);
+                                await call(id, args[2]);
                             }
-                        } else message.channel.send(`I could not find user <@!${args[3]}> in this guild!`);
+                        }
                         await rpmessage.edit("Done.");
                     }
                     switch(args[1]) {
@@ -313,7 +311,7 @@ client.on('message', async message => {
                             foreachElement("Adding", args, addScore, message);
                             break;
                         case "wipe": 
-                            foreachElement("Wiping", args, deleteScore, message, true);
+                            foreachElement("Wiping", args, deleteScore, message);
                             break;
                     }
                 }

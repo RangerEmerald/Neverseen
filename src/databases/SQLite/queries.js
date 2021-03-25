@@ -16,9 +16,9 @@ async function scoreCache() {
 async function addScore(id, points = 1) {
     const userscore = scoreMapCache.get(id);
     if (userscore == undefined) {
-        db.run(`INSERT INTO scores(id, points) VALUES(?, ?)`, [id, points], function (err) {
+        db.run(`INSERT INTO scores(id, points) VALUES(?, ?)`, [id, Number(points)], function (err) {
             if (err) throw err;
-            scoreMapCache.set(id, points);
+            scoreMapCache.set(id, Number(points));
         });
     } else {
         db.run(`UPDATE scores SET points = ? WHERE id = ?`, [Number(userscore) + Number(points), id], function (err) {
