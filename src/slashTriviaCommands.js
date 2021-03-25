@@ -1,4 +1,5 @@
-const { addScore, scoreMapCache } = require('./databases/SQLite/queries');
+const { addScore, scoreMapCache, deleteScore } = require('./databases/SQLite/queries');
+const { private } = require('./resources/private');
 
 async function guess(args, triviaMain, interaction) {
     if (!triviaMain[interaction.guild_id].triviaMessage) {
@@ -55,5 +56,32 @@ async function leaderboards(args, client, Discord, interaction) {
     return {type: 'embed', content: embed};
 }
 
+async function points(args, client, interaction) {
+    if (interaction.member.roles.includes(private.control)) {
+        args.users = args.users.split(" ");
+        async function foreachElement(args, call) {
+            if (args.users[0] == "@everyone") args.users = client.users.cache;
+            for (id of args.users) {
+                const member = client.users.cache.get(id);
+                if (!member) return {type: 'message', content: `I could not find user <@!${id}>`};
+                await call(id, args.amount);
+            }
+            return {type: 'message', content: 'Done.'};
+        }
+        switch(args.operation) {
+            case "remove": 
+                await foreachElement(args, deleteScore);
+                break;
+            case "add": 
+                await foreachElement(args, addScore);
+                break;
+            case "wipe": 
+                await foreachElement(args, deleteScore);
+                break;
+        }
+        return {type: 'message', content: 'Done.'};
+    } else return {type: 'message', content: 'You cannot do this command!'};
+}
 
-module.exports = {guess, leaderboards};
+
+module.exports = {guess, leaderboards, points};

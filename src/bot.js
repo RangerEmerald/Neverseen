@@ -8,7 +8,7 @@ const { list, replylist, trivia } = require('./resources/wordtrivialist');
 const { private } = require('./resources/private');
 const similarity = require('./resources/isMessageAlike');
 const { addScore,  scoreCache, scoreMapCache, deleteScore } = require('./databases/SQLite/queries');
-const { guess, leaderboards } = require('./slashTriviaCommands');
+const { guess, leaderboards, points } = require('./slashTriviaCommands');
 
 //SET UP VARIABLES
 const token = process.env.BOT_TOKEN;
@@ -126,8 +126,9 @@ async function joinLeaveMessage(member, whichjoinleave) {
 }
 
 //ALL SLASH COMMANDS
-async function createSlashCommand(idata) {
-    await client.api.applications(client.user.id).commands.post({data: idata});
+async function createSlashCommand(guild, idata) {
+    if (!guild) await client.api.applications(client.user.id).commands.post({data: idata});
+    else await client.api.applications(client.user.id).guilds(guild).commands.post({data: idata});
 }
 
 async function reply(interaction, response) {
@@ -171,10 +172,13 @@ async function listener() {
         
         switch(command) {
             case "leaderboards":
-                await reply(interaction, await (await leaderboards(args, client, Discord, interaction)).content);
+                await reply(interaction, (await leaderboards(args, client, Discord, interaction)).content);
                 break;
             case "guess":
                 await reply(interaction, (await guess(args, triviaMain, interaction)).content);
+                break;
+            case "points":
+                await reply(interaction, (await points(args, client, interaction)).content);
                 break;
         }
     });
@@ -193,7 +197,7 @@ client.on('ready', async () =>{
         userReplyMessage.clear();
     }, timer-2000);
 
-    createSlashCommand({
+    createSlashCommand(null, {
         name: 'Leaderboards',
         description: 'Get Neverseen top trivia players',
         options: [
@@ -201,18 +205,57 @@ client.on('ready', async () =>{
                 name: 'User',
                 description: 'Get user\'s position in the leaderboards',
                 required: false,
-                type: 3
+                type: 6
             }
         ]
     });
 
-    createSlashCommand({
+    createSlashCommand(null, {
         name: 'Guess',
         description: 'Guess the trivia answer when there is a trivia',
         options: [
             {
                 name: 'Guess',
                 description: 'Your guess',
+                required: true,
+                type: 3
+            }
+        ]
+    });
+
+    createSlashCommand("709195031822598255", {
+        name: 'Points',
+        description: 'Add/remove/wipe points from user/s',
+        options: [
+            {
+                name: 'Operation',
+                description: 'Set to either add/remove/wipe',
+                required: true,
+                choices: [
+                    {
+                        name: 'Add',
+                        value: 'add'
+                    },
+                    {
+                        name: 'Remove',
+                        value: 'remove'
+                    },
+                    {
+                        name: 'Wipe',
+                        value: 'wipe'
+                    }
+                ],
+                type: 3
+            },
+            {
+                name: 'Amount',
+                description: 'The amounts of points to add/remove/wipe',
+                required: true,
+                type: 4
+            },
+            {
+                name: 'Users',
+                description: 'Add/remove/wipe the amount of points from user/s',
                 required: true,
                 type: 3
             }
