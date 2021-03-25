@@ -8,6 +8,7 @@ const { list, replylist, trivia } = require('./resources/wordtrivialist');
 const { private } = require('./resources/private');
 const similarity = require('./resources/isMessageAlike');
 const { addScore,  scoreCache, scoreMapCache, deleteScore } = require('./databases/SQLite/queries');
+const { guess, leaderboards } = require('./slashTriviaCommands');
 
 //SET UP VARIABLES
 const token = process.env.BOT_TOKEN;
@@ -124,8 +125,63 @@ async function joinLeaveMessage(member, whichjoinleave) {
     }
 }
 
+//ALL SLASH COMMANDS
+async function createSlashCommand(idata) {
+    await client.api.applications(client.user.id).commands.post({data: idata});
+}
+
+async function reply(interaction, response) {
+    let data = {
+        content: response
+    }
+
+    if (typeof response == 'object') data = await createAPIMessage(interaction, response);
+    
+    client.api.interactions(interaction.id, interaction.token).callback.post({
+        data: {
+            type: 4, 
+            data
+        }
+    });
+};
+
+async function createAPIMessage(interaction, content) {
+    const { data, files } = await Discord.APIMessage.create(
+        client.channels.resolve(interaction.channel_id),
+        content
+    )
+    .resolveData()
+    .resolveFiles();
+
+    return {...data, files};
+};
+
+async function listener() {
+    client.ws.on('INTERACTION_CREATE', async (interaction) => {
+        const { name, options } = interaction.data;
+
+        const command = name.toLowerCase();
+
+        const args = {};
+
+        if (options) for (option of options) {
+            const {name, value} = option;
+            args[name] = value;
+        }
+        
+        switch(command) {
+            case "leaderboards":
+                await reply(interaction, await (await leaderboards(args, client, Discord, interaction)).content);
+                break;
+            case "guess":
+                await reply(interaction, (await guess(args, triviaMain, interaction)).content);
+                break;
+        }
+    });
+}
+
 //BOT 
-client.on('ready', () =>{ 
+client.on('ready', async () =>{ 
     scoreCache();
     console.log(`${client.user.tag} has logged in`); 
     client.user.setActivity('The Neverseen', { type: "WATCHING" })
@@ -136,6 +192,35 @@ client.on('ready', () =>{
     setInterval(() => {
         userReplyMessage.clear();
     }, timer-2000);
+
+    createSlashCommand({
+        name: 'Leaderboards',
+        description: 'Get Neverseen top trivia players',
+        options: [
+            {
+                name: 'User',
+                description: 'Get user\'s position in the leaderboards',
+                required: false,
+                type: 3
+            }
+        ]
+    });
+
+    createSlashCommand({
+        name: 'Guess',
+        description: 'Guess the trivia answer when there is a trivia',
+        options: [
+            {
+                name: 'Guess',
+                description: 'Your guess',
+                required: true,
+                type: 3
+            }
+        ]
+    });
+
+    listener();
+
 });
 
 client.on('message', async message => {
