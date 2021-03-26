@@ -59,12 +59,13 @@ async function leaderboards(args, client, Discord, interaction) {
 async function points(args, client, interaction) {
     if (interaction.member.roles.includes(private.control)) {
         args.users = args.users.split(" ");
-        async function foreachElement(args, call) {
+        async function foreachElement(args, call, type) {
             if (args.users[0] == "@everyone") args.users = client.users.cache;
             for (id of args.users) {
                 const member = client.users.cache.get(id);
                 if (!member) return {type: 'message', content: `I could not find user <@!${id}>`};
-                await call(id, args.amount);
+                if (!type) await call(id, args.amount);
+                else await call(id);
             }
             return {type: 'message', content: 'Done.'};
         }
@@ -76,7 +77,7 @@ async function points(args, client, interaction) {
                 await foreachElement(args, addScore);
                 break;
             case "wipe": 
-                await foreachElement(args, deleteScore);
+                await foreachElement(args, deleteScore, "wipe");
                 break;
         }
         return {type: 'message', content: 'Done.'};
