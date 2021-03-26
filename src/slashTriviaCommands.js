@@ -8,7 +8,7 @@ async function guess(args, triviaMain, interaction) {
         if (triviaMain[interaction.guild_id].triviaAnswer.includes(args.guess)) {
             await triviaMain[interaction.guild_id].triviaMessage.delete().catch(error => console.log(`An error has occured --- ${error}`));
             triviaMain[interaction.guild_id].triviaMessage = null;
-            if (interaction.guild_id != "709195031822598255") await addScore(message.author.id);
+            if (interaction.guild_id != "709195031822598255") await addScore(interaction.member.user.id);
             triviaMain[interaction.guild_id].users.clear();
             return {type: 'message', content: `You got the answer!`};
         } else return {type: 'message', content: `That is not the answer!`};
