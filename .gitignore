@@ -2,3 +2,4 @@
 node_modules
 src/databases/SQLite/setup.js
 package-lock.json
+*.DS_Store
