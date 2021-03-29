@@ -1,5 +1,5 @@
-const { addScore, scoreMapCache, deleteScore } = require('./databases/SQLite/queries');
-const { private } = require('./resources/private');
+const { addScore, scoreMapCache, deleteScore } = require('../databases/SQLite/queries');
+const { private } = require('../resources/private');
 
 async function guess(args, triviaMain, interaction) {
     if (!triviaMain[interaction.guild_id].triviaMessage) {
