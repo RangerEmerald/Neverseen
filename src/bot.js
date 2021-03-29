@@ -2,13 +2,14 @@
 require('dotenv').config();
 const Discord = require('discord.js');
 const client = new Discord.Client({ fetchAllMembers: true });
+const { PythonShell } = require('python-shell');
 
 //GET FILES
 const { list, replylist, trivia } = require('./resources/wordtrivialist');
 const { private } = require('./resources/private');
 const similarity = require('./resources/isMessageAlike');
 const { addScore,  scoreCache, scoreMapCache, deleteScore } = require('./databases/SQLite/queries');
-const { guess, leaderboards, points } = require('./slashTriviaCommands');
+const { guess, leaderboards, points } = require('./slashCommandSupport/slashTriviaCommands');
 
 //SET UP VARIABLES
 const token = process.env.BOT_TOKEN;
@@ -126,6 +127,18 @@ async function joinLeaveMessage(member, whichjoinleave) {
 }
 
 //ALL SLASH COMMANDS
+async function pyfile(inputargs) {
+    let pyshell = new PythonShell(`src/slashCommandSupport/getMessages.py`, {args: inputargs});
+    return new Promise((resolve, reject) => {
+        pyshell.on('message', function (message) {
+            try {
+                if (message) resolve(JSON.parse(message));
+                else reject(false);
+            } catch(err) { console.log(err) }
+        });
+    });
+}
+
 async function createSlashCommand(guild, idata) {
     if (!guild) await client.api.applications(client.user.id).commands.post({data: idata});
     else await client.api.applications(client.user.id).guilds(guild).commands.post({data: idata});
@@ -157,6 +170,21 @@ async function createAPIMessage(interaction, content) {
     return {...data, files};
 };
 
+async function deleteAfter(inputargs, interaction, time) {
+    let timecomplete = new Date().getTime();
+    let messages = await pyfile(inputargs);
+    if (!messages) return console.log("could not fetch messages");
+    
+    let messageid;
+    for (message of messages) if (message.interaction && message.interaction.id == interaction.id) messageid = message.id;
+
+    if (!messageid) return console.log("could not find the message");
+
+    timecomplete -= new Date().getTime();
+
+    setTimeout(() => client.channels.cache.get(inputargs[1]).messages.fetch(messageid).then(msg => msg.delete()), time + timecomplete);
+}
+
 async function listener() {
     client.ws.on('INTERACTION_CREATE', async (interaction) => {
         const { name, options } = interaction.data;
@@ -176,6 +204,7 @@ async function listener() {
                 break;
             case "guess":
                 await reply(interaction, (await guess(args, triviaMain, interaction)).content);
+                await deleteAfter([process.env.BOT_TOKEN, interaction.channel_id], interaction, 60000);
                 break;
             case "points":
                 await reply(interaction, (await points(args, client, interaction)).content);
